@@ -716,7 +716,7 @@ struct ChangePasswordReq {
 }
 
 struct BalanceReq {
-    1: optional common.GraphSpaceID     space_id,
+    1: common.GraphSpaceID              space_id,
     // Specify the balance id to check the status of the related balance plan
     2: optional i64                     id,
     3: optional list<common.HostAddr>   host_del,
@@ -737,15 +737,8 @@ struct BalanceTask {
     2: TaskResult result,
 }
 
-struct BalanceResp {
-    1: common.ErrorCode code,
-    2: i64              id,
-    // Valid if code equals E_LEADER_CHANGED.
-    3: common.HostAddr  leader,
-    4: list<BalanceTask> tasks,
-}
-
 struct LeaderBalanceReq {
+    1: common.GraphSpaceID   space_id,
 }
 
 enum ConfigModule {
@@ -1194,7 +1187,6 @@ service MetaService {
     ExecResp changePassword(1: ChangePasswordReq req);
 
     HBResp           heartBeat(1: HBReq req);
-    BalanceResp      balance(1: BalanceReq req);
     ExecResp         leaderBalance(1: LeaderBalanceReq req);
 
     ExecResp regConfig(1: RegConfigReq req);
