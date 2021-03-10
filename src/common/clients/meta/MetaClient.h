@@ -155,9 +155,9 @@ struct MetaClientOptions {
 
 
 class MetaClient {
-    FRIEND_TEST(ConfigManTest, MetaConfigManTest);
-    FRIEND_TEST(ConfigManTest, MockConfigTest);
-    FRIEND_TEST(ConfigManTest, RocksdbOptionsTest);
+    FRIEND_TEST(ConfigTest, MetaConfigTest);
+    FRIEND_TEST(ConfigTest, MockConfigTest);
+    FRIEND_TEST(ConfigTest, RocksdbOptionsTest);
     FRIEND_TEST(MetaClientTest, SimpleTest);
     FRIEND_TEST(MetaClientTest, RetryWithExceptionTest);
     FRIEND_TEST(MetaClientTest, RetryOnceTest);
