@@ -40,8 +40,8 @@ public:
         const std::vector<EdgeType>& edgeTypes,
         cpp2::EdgeDirection edgeDirection,
         const std::vector<cpp2::StatProp>* statProps,
-        const std::vector<cpp2::VertexProp>* vertexProps,
-        const std::vector<cpp2::EdgeProp>* edgeProps,
+        const std::vector<cpp2::SchemaProp>* vertexProps,
+        const std::vector<cpp2::SchemaProp>* edgeProps,
         const std::vector<cpp2::Expr>* expressions,
         bool dedup = false,
         bool random = false,
@@ -53,8 +53,8 @@ public:
     folly::SemiFuture<StorageRpcResponse<cpp2::GetPropResponse>> getProps(
         GraphSpaceID space,
         const DataSet& input,
-        const std::vector<cpp2::VertexProp>* vertexProps,
-        const std::vector<cpp2::EdgeProp>* edgeProps,
+        const std::vector<cpp2::SchemaProp>* vertexProps,
+        const std::vector<cpp2::SchemaProp>* edgeProps,
         const std::vector<cpp2::Expr>* expressions,
         bool dedup = false,
         const std::vector<cpp2::OrderBy>& orderBy = std::vector<cpp2::OrderBy>(),
@@ -125,12 +125,16 @@ public:
         cpp2::TraverseSpec traverseSpec,
         folly::EventBase* evb = nullptr);
 
-    folly::Future<StatusOr<cpp2::ScanEdgeResponse>> scanEdge(
-        cpp2::ScanEdgeRequest req,
-        folly::EventBase* evb = nullptr);
+    // folly::Future<StatusOr<cpp2::ScanEdgeResponse>> scanEdge(
+    //     cpp2::ScanEdgeRequest req,
+    //     folly::EventBase* evb = nullptr);
 
-    folly::Future<StatusOr<cpp2::ScanVertexResponse>> scanVertex(
-        cpp2::ScanVertexRequest req,
+    // folly::Future<StatusOr<cpp2::ScanVertexResponse>> scanVertex(
+    //     cpp2::ScanVertexRequest req,
+    //     folly::EventBase* evb = nullptr);
+
+    folly::Future<StatusOr<cpp2::ScanResponse>> scan(
+        cpp2::ScanRequest req,
         folly::EventBase* evb = nullptr);
 
 private:

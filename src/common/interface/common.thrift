@@ -209,6 +209,11 @@ struct NodeInfo {
     2: DirInfo       dir,
 }
 
+union SchemaID {
+    1: common.TagID     tag_id,
+    2: common.EdgeType  edge_type,
+}
+
 struct PartitionBackupInfo {
     1: map<PartitionID, LogInfo> (cpp.template = "std::unordered_map")  info,
 }
@@ -386,3 +391,4 @@ enum ErrorCode {
 
     E_UNKNOWN                         = -8000,
 } (cpp.enum_strict)
+

@@ -17,8 +17,8 @@ GraphStorageClient::getNeighbors(GraphSpaceID space,
                                  const std::vector<EdgeType>& edgeTypes,
                                  cpp2::EdgeDirection edgeDirection,
                                  const std::vector<cpp2::StatProp>* statProps,
-                                 const std::vector<cpp2::VertexProp>* vertexProps,
-                                 const std::vector<cpp2::EdgeProp>* edgeProps,
+                                 const std::vector<cpp2::SchemaProp>* vertexProps,
+                                 const std::vector<cpp2::SchemaProp>* edgeProps,
                                  const std::vector<cpp2::Expr>* expressions,
                                  bool dedup,
                                  bool random,
@@ -164,8 +164,8 @@ GraphStorageClient::addEdges(GraphSpaceID space,
 folly::SemiFuture<StorageRpcResponse<cpp2::GetPropResponse>>
 GraphStorageClient::getProps(GraphSpaceID space,
                              const DataSet& input,
-                             const std::vector<cpp2::VertexProp>* vertexProps,
-                             const std::vector<cpp2::EdgeProp>* edgeProps,
+                             const std::vector<cpp2::SchemaProp>* vertexProps,
+                             const std::vector<cpp2::SchemaProp>* edgeProps,
                              const std::vector<cpp2::Expr>* expressions,
                              bool dedup,
                              const std::vector<cpp2::OrderBy>& orderBy,
@@ -502,32 +502,51 @@ GraphStorageClient::lookupAndTraverse(GraphSpaceID space,
                                return client->future_lookupAndTraverse(r); });
 }
 
-folly::Future<StatusOr<cpp2::ScanEdgeResponse>>
-GraphStorageClient::scanEdge(cpp2::ScanEdgeRequest req,
-                             folly::EventBase* evb) {
-    std::pair<HostAddr, cpp2::ScanEdgeRequest> request;
+// folly::Future<StatusOr<cpp2::ScanEdgeResponse>>
+// GraphStorageClient::scanEdge(cpp2::ScanEdgeRequest req,
+//                              folly::EventBase* evb) {
+//     std::pair<HostAddr, cpp2::ScanEdgeRequest> request;
+//     auto host = this->getLeader(req.get_space_id(), req.get_part_id());
+//     if (!host.ok()) {
+//         return folly::makeFuture<StatusOr<cpp2::ScanEdgeResponse>>(host.status());
+//     }
+//     request.first = std::move(host).value();
+//     request.second = std::move(req);
+
+//     return getResponse(
+//         evb, std::move(request),
+//         [] (cpp2::GraphStorageServiceAsyncClient* client,
+//             const cpp2::ScanEdgeRequest& r) {
+//             return client->future_scanEdge(r);
+//         });
+// }
+
+// folly::Future<StatusOr<cpp2::ScanVertexResponse>>
+// GraphStorageClient::scanVertex(cpp2::ScanVertexRequest req,
+//                                folly::EventBase* evb) {
+//     std::pair<HostAddr, cpp2::ScanVertexRequest> request;
+//     auto host = this->getLeader(req.get_space_id(), req.get_part_id());
+//     if (!host.ok()) {
+//         return folly::makeFuture<StatusOr<cpp2::ScanVertexResponse>>(host.status());
+//     }
+//     request.first = std::move(host).value();
+//     request.second = std::move(req);
+
+//     return getResponse(
+//         evb,
+//         std::move(request),
+//         [](cpp2::GraphStorageServiceAsyncClient* client, const cpp2::ScanVertexRequest& r) {
+//             return client->future_scanVertex(r);
+//         });
+// }
+
+folly::Future<StatusOr<cpp2::ScanResponse>>
+GraphStorageClient::scan(cpp2::ScanRequest req,
+                         folly::EventBase* evb) {
+    std::pair<HostAddr, cpp2::ScanRequest> request;
     auto host = this->getLeader(req.get_space_id(), req.get_part_id());
     if (!host.ok()) {
-        return folly::makeFuture<StatusOr<cpp2::ScanEdgeResponse>>(host.status());
-    }
-    request.first = std::move(host).value();
-    request.second = std::move(req);
-
-    return getResponse(
-        evb, std::move(request),
-        [] (cpp2::GraphStorageServiceAsyncClient* client,
-            const cpp2::ScanEdgeRequest& r) {
-            return client->future_scanEdge(r);
-        });
-}
-
-folly::Future<StatusOr<cpp2::ScanVertexResponse>>
-GraphStorageClient::scanVertex(cpp2::ScanVertexRequest req,
-                               folly::EventBase* evb) {
-    std::pair<HostAddr, cpp2::ScanVertexRequest> request;
-    auto host = this->getLeader(req.get_space_id(), req.get_part_id());
-    if (!host.ok()) {
-        return folly::makeFuture<StatusOr<cpp2::ScanVertexResponse>>(host.status());
+        return folly::makeFuture<StatusOr<cpp2::ScanResponse>>(host.status());
     }
     request.first = std::move(host).value();
     request.second = std::move(req);
@@ -535,8 +554,8 @@ GraphStorageClient::scanVertex(cpp2::ScanVertexRequest req,
     return getResponse(
         evb,
         std::move(request),
-        [](cpp2::GraphStorageServiceAsyncClient* client, const cpp2::ScanVertexRequest& r) {
-            return client->future_scanVertex(r);
+        [](cpp2::GraphStorageServiceAsyncClient* client, const cpp2::ScanRequest& r) {
+            return client->future_scan(r);
         });
 }
 

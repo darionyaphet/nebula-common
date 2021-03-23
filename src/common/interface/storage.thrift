@@ -72,26 +72,14 @@ struct Expr {
     2: binary           expr,
 }
 
-
-// Define an edge property
-struct EdgeProp {
-    // A valid edge type
-    1: common.EdgeType  type,
+struct SchemaProp {
+    // A valid tag id or edge type
+    1: common.SchemaID  schema,
     // The list of property names. If it is empty, then all properties in value will be returned.
-    // Support kSrc, kType, kRank and kDst as well.
+    // For tag id: Support kVid and kTag as well.
+    // For edge type: Support kSrc, kType, kRank and kDst as well.
     2: list<binary>     props,
 }
-
-
-// Define a vertex property
-struct VertexProp {
-    // A valid tag id
-    1: common.TagID tag,
-    // The list of property names. If it is empty, then all properties in value will be returned.
-    // Support kVid and kTag as well.
-    2: list<binary> props,
-}
-
 
 enum OrderDirection {
     ASCENDING = 1,
@@ -137,11 +125,12 @@ struct TraverseSpec {
     // A list of source vertex properties to be returned. If the list is not given,
     //   no prop will be returned. If an empty prop list is given, all properties
     //   will be returned.
-    5: optional list<VertexProp>                vertex_props,
+    5: optional list<SchemaProp>                vertex_props,
     // A list of edge properties to be returned. If the list is not given,
     //   no prop will be returned. If an empty prop list is given, all edge properties
     //   will be returned.
-    6: optional list<EdgeProp>                  edge_props,
+    6: optional list<SchemaProp>                edge_props,
+
     // A list of expressions which are evaluated on each edge
     7: optional list<Expr>                      expressions,
     // A list of expressions used to sort the result
@@ -247,8 +236,8 @@ struct GetPropRequest {
     // Based on whether to get the vertex properties or to get the edge properties,
     // exactly one of the vertex_props or edge_props must be set. If an empty list is given
     // then all properties of the vertex or the edge will be returned in tagId/edgeType ascending order
-    3: optional list<VertexProp>                vertex_props,
-    4: optional list<EdgeProp>                  edge_props,
+    3: optional list<SchemaProp>                vertex_props,
+    4: optional list<SchemaProp>                edge_props,
     // A list of expressions with alias
     5: optional list<Expr>                      expressions,
     // Whether to do the dedup based on the entire result row
@@ -526,12 +515,12 @@ struct LookupAndTraverseRequest {
  * End of Index section
  */
 
-struct ScanVertexRequest {
+struct ScanRequest {
     1: common.GraphSpaceID                  space_id,
     2: common.PartitionID                   part_id,
     // start key of this block
     3: optional binary                      cursor,
-    4: VertexProp                           return_columns,
+    4: SchemaProp                           property,
     // max row count of tag in this response
     5: i64                                  limit,
     // only return data in time range [start_time, end_time)
@@ -545,42 +534,12 @@ struct ScanVertexRequest {
     10: bool                                enable_read_from_follower = true,
 }
 
-struct ScanVertexResponse {
+struct ScanResponse {
     1: required ResponseCommon              result,
     // The data will return as a dataset. The format is as follows:
     // Each column represents one property. the column name is in the form of "tag_name.prop_alias"
     // in the same order which specified in VertexProp in request.
     2: common.DataSet                       vertex_data,
-    3: bool                                 has_next,
-    // next start key of scan, only valid when has_next is true
-    4: optional binary                      next_cursor,
-}
-
-struct ScanEdgeRequest {
-    1: common.GraphSpaceID                  space_id,
-    2: common.PartitionID                   part_id,
-    // start key of this block
-    3: optional binary                      cursor,
-    4: EdgeProp                             return_columns,
-    // max row count of edge in this response
-    5: i64                                  limit,
-    // only return data in time range [start_time, end_time)
-    6: optional i64                         start_time,
-    7: optional i64                         end_time,
-    8: optional binary                      filter,
-    // when storage enable multi versions and only_latest_version is true, only return latest version.
-    // when storage disable multi versions, just use the default value.
-    9: bool                                only_latest_version = false,
-    // if set to false, forbid follower read
-    10: bool                                enable_read_from_follower = true,
-}
-
-struct ScanEdgeResponse {
-    1: required ResponseCommon              result,
-    // The data will return as a dataset. The format is as follows:
-    // Each column represents one property. the column name is in the form of "edge_name.prop_alias"
-    // in the same order which specified in EdgeProp in requesss.
-    2: common.DataSet                       edge_data,
     3: bool                                 has_next,
     // next start key of scan, only valid when has_next is true
     4: optional binary                      next_cursor,
@@ -621,8 +580,7 @@ service GraphStorageService {
     UpdateResponse updateVertex(1: UpdateVertexRequest req);
     UpdateResponse updateEdge(1: UpdateEdgeRequest req);
 
-    ScanVertexResponse scanVertex(1: ScanVertexRequest req)
-    ScanEdgeResponse scanEdge(1: ScanEdgeRequest req)
+    ScanResponse scan(1: ScanRequest req)
 
     GetUUIDResp getUUID(1: GetUUIDReq req);
 

@@ -3603,9 +3603,10 @@ MetaClient::getFTIndexBySpaceSchemaFromCache(GraphSpaceID spaceId, int32_t schem
     }
     folly::RWSpinLock::ReadHolder holder(localCacheLock_);
     for (auto it = fulltextIndexMap_.begin(); it != fulltextIndexMap_.end(); ++it) {
-        auto id = it->second.get_depend_schema().getType() == cpp2::SchemaID::Type::edge_type
-                ? it->second.get_depend_schema().get_edge_type()
-                : it->second.get_depend_schema().get_tag_id();
+        auto schema = it->second.get_depend_schema();
+        auto id = schema.getType() == nebula::cpp2::SchemaID::Type::edge_type
+                ? schema.get_edge_type()
+                : schema.get_tag_id();
         if (it->second.get_space_id() == spaceId && id == schemaId) {
             return std::make_pair(it->first, it->second);
         }
