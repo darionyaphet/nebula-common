@@ -15,6 +15,21 @@
 namespace nebula {
 namespace meta {
 
+struct HostAndPath {
+    HostAddr host_;
+    std::string path_;
+
+    HostAndPath(HostAddr host, std::string path) : host_(host), path_(path) {}
+
+    bool operator==(const HostAndPath& rhs) const {
+        return this->host_ == rhs.host_ && this->path_ == rhs.path_;
+    }
+
+    bool operator!=(const HostAndPath& rhs) const {
+        return !(*this == rhs);
+    }
+};
+
 struct PartHosts {
     GraphSpaceID spaceId_;
     PartitionID partId_;

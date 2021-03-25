@@ -6,7 +6,6 @@
 
 #include <folly/hash/Hash.h>
 
-#include "common/base/Base.h"
 #include "common/datatypes/HostAddr.h"
 
 namespace nebula {

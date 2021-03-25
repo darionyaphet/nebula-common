@@ -186,6 +186,10 @@ struct HostAddr {
     2: Port     port,
 } (cpp.type = "nebula::HostAddr")
 
+struct HostAndPath {
+    1: HostAddr host,
+    2: binary   path,
+} (cpp.type = "nebula::HostAndPath")
 
 struct KeyValue {
     1: binary key,
