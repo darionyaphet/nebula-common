@@ -17,11 +17,21 @@
 namespace nebula {
 namespace http {
 
+using proxygen::HTTPMethod;
+
 class HttpClientHandler : public proxygen::RequestHandler {
 public:
     HttpClientHandler() = default;
 
-    void onRequest(std::unique_ptr<proxygen::HTTPMessage>) noexcept override {
+    void onRequest(std::unique_ptr<proxygen::HTTPMessage> headers) noexcept override {
+        if (headers->getMethod().value() == HTTPMethod::GET) {
+            LOG(INFO) << "Processing HTTP Get Request";
+        } else if (headers->getMethod().value() == HTTPMethod::PUT) {
+            LOG(INFO) << "Processing HTTP Put Request";
+        } else {
+            err_ = HttpCode::E_UNSUPPORTED_METHOD;
+            return;
+        }
     }
 
     void onBody(std::unique_ptr<folly::IOBuf>) noexcept override {
@@ -46,7 +56,11 @@ public:
         LOG(ERROR) << "HttpClientHandler Error: "
                    << proxygen::getErrorString(error);
     }
+
+private:
+    HttpCode err_{HttpCode::SUCCEEDED};
 };
+
 class HttpClientTestEnv : public ::testing::Environment {
 public:
     void SetUp() override {
@@ -57,7 +71,12 @@ public:
         webSvc_ = std::make_unique<WebService>();
 
         auto& router = webSvc_->router();
-        router.get("/path").handler([](auto&&) { return new HttpClientHandler(); });
+        router.get("/get_path").handler([](auto&&) {
+            return new HttpClientHandler();
+        });
+        router.post("/post_path").handler([](auto&&) {
+            return new HttpClientHandler();
+        });
 
         auto status = webSvc_->start();
         ASSERT_TRUE(status.ok()) << status;
@@ -75,7 +94,7 @@ private:
 TEST(HttpClient, get) {
     {
         auto url = folly::stringPrintf("http://%s:%d%s", FLAGS_ws_ip.c_str(),
-                                       FLAGS_ws_http_port, "/path");
+                                       FLAGS_ws_http_port, "/get_path");
         auto result = HttpClient::get(url);
         ASSERT_TRUE(result.ok());
         ASSERT_EQ("HttpClientHandler successfully", result.value());
@@ -84,6 +103,25 @@ TEST(HttpClient, get) {
         auto url = folly::stringPrintf("http://%s:%d%s", FLAGS_ws_ip.c_str(),
                                        FLAGS_ws_http_port, "/not_exist");
         auto result = HttpClient::get(url);
+        ASSERT_TRUE(result.ok());
+        ASSERT_TRUE(result.value().empty());
+    }
+}
+
+TEST(HttpClient, post) {
+    {
+        auto url = folly::stringPrintf("http://%s:%d%s", FLAGS_ws_ip.c_str(),
+                                       FLAGS_ws_http_port, "/post_path");
+        std::string message = "Hello World!";
+        auto result = HttpClient::post(url, message);
+        ASSERT_TRUE(result.ok());
+        ASSERT_EQ("HttpClientHandler successfully", result.value());
+    }
+    {
+        auto url = folly::stringPrintf("http://%s:%d%s", FLAGS_ws_ip.c_str(),
+                                       FLAGS_ws_http_port, "/not_exist");
+        std::string message = "Hello World!";
+        auto result = HttpClient::post(url, message);
         ASSERT_TRUE(result.ok());
         ASSERT_TRUE(result.value().empty());
     }
