@@ -436,6 +436,7 @@ struct DeleteVerticesRequest {
     // partId => vertexId
     2: map<common.PartitionID, list<common.Value>>
         (cpp.template = "std::unordered_map")           parts,
+    3: optional common.TagID                            tag_id,
 }
 
 
@@ -444,6 +445,7 @@ struct DeleteEdgesRequest {
     // partId => edgeKeys
     2: map<common.PartitionID, list<EdgeKey>>
         (cpp.template = "std::unordered_map")   parts,
+    3: optional common.EdgeType                 edge_type,
 }
 /*
  * End of DeleteVertex section
