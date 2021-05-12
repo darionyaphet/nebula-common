@@ -46,6 +46,9 @@ enum ErrorCode {
     E_OUT_OF_RANGE         = -23,   // Value exceeds the range of type
     E_ATOMIC_OP_FAILED     = -24,   // Atomic operation failed
     E_DATA_CONFLICT_ERROR  = -25,   // data conflict, for index write without toss.
+    E_EXP_DECODE_ERROR     = -26,   // expression decode failed
+    E_ROW_READER_ERROR     = -27,   // nebula row reader failed
+    E_ROW_WRITER_ERROR     = -28,   // nebula row writer failed
 
     // meta failures
     E_EDGE_PROP_NOT_FOUND    = -31,
@@ -86,6 +89,7 @@ enum ErrorCode {
 
     E_MUTATE_EDGE_CONFLICT   = -83,
     E_MUTATE_TAG_CONFLICT    = -84,
+
     // transaction
     E_OUTDATED_LOCK          = -86,
 
