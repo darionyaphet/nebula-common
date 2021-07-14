@@ -3545,6 +3545,17 @@ StatusOr<std::vector<cpp2::FTClient>> MetaClient::getFTClientsFromCache() {
     return fulltextClientList_;
 }
 
+
+folly::Future<StatusOr<bool>>
+MetaClient::signInStreamingService(cpp2::StreamingServiceType type,
+                                   const std::vector<cpp2::StreamingClient>& clients) {
+
+}
+
+folly::Future<StatusOr<bool>> MetaClient::signOutStreamingService() {
+    return 
+}
+
 folly::Future<StatusOr<bool>>
 MetaClient::createFTIndex(const std::string& name, const cpp2::FTIndex& index) {
     cpp2::CreateFTIndexReq req;

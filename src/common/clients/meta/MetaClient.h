@@ -427,6 +427,14 @@ public:
 
     StatusOr<std::vector<cpp2::FTClient>> getFTClientsFromCache();
 
+
+    // Operations for streaming services
+    folly::Future<StatusOr<bool>>
+    signInStreamingService(cpp2::StreamingServiceType type,
+                           const std::vector<cpp2::StreamingClient>& clients);
+
+    folly::Future<StatusOr<bool>> signOutStreamingService();
+
     // Opeartions for fulltext index.
 
     folly::Future<StatusOr<bool>>

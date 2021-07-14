@@ -19,6 +19,7 @@
 #   NEBULA_USE_LINKER               -- Set linker to use, options are: bfd, gold
 #
 #   ENABLE_JEMALLOC                 -- Link jemalloc into all executables
+#   ENABLE_KAFKA                    -- Support Kafka C++ Client
 #   ENABLE_TESTING                  -- Build unit test
 #   ENABLE_PACK_ONE                 -- Package to one or multi packages
 #
